@@ -3,7 +3,6 @@ resource "aws_vpc" "default_vpc" {
   cidr_block = "192.168.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support = true
-  map_public_ip_on_launch = true
 
   tags = {
     Name = "default_test"
@@ -14,6 +13,7 @@ resource "aws_vpc" "default_vpc" {
 resource "aws_subnet" "default_subnet" {
   cidr_block = "${cidrsubnet(aws_vpc.default_vpc.cidr_block, 0, 0)}"
   vpc_id = "${aws_vpc.default_vpc.id}"
+  map_public_ip_on_launch = true
   # availability_zone = "us-east-1a"
 
   tags = {
