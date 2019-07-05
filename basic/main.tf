@@ -54,7 +54,7 @@ resource "aws_instance" "ec2_instance" {
   ami             = "${data.aws_ami.ubuntu.id}"
   instance_type   = "${var.ec2_instance_node_type}"
   key_name        = "${var.ssh_key_name}"
-  security_groups = ["${aws_security_group.allow_ssh.id}"]
+  security_groups = ["${aws_security_group.allow_all.id}"]
   user_data       = "${data.template_cloudinit_config.ec2_cloudinit.rendered}"
 
   # Networking
