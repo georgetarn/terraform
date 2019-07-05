@@ -1,8 +1,18 @@
 # Create a default VPC
 resource "aws_vpc" "default_vpc" {
-  cidr_block = "192.168.1.0/24"
+  cidr_block = "192.168.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support = true
+  tags = {
+    Name = "default_test"
+  }
+}
+
+# Create a x.x.x.x/24 subnet in this VPC
+resource "aws_subnet" "default_subnet" {
+  cidr_block = "${cidrsubnet(aws_vpc.default_vpc.cidr_block, 0, 0)}"
+  vpc_id = "${aws_vpc.default_vpc.id}"
+  # availability_zone = "us-east-1a"
   tags = {
     Name = "default_test"
   }

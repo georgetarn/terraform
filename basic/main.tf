@@ -1,17 +1,12 @@
 provider "aws" {
-  access_key = "${var.aws_access_key}"
-  secret_key = "${var.aws_secret_key}"
+    profile = "${var.profile}"
+    shared_credentials_file = "~/.aws/credentials"
   region     = "${var.region}"
 }
 
-variable "aws_access_key" {
+variable "profile" {
   default     = "xxx"
-  description = "Amazon AWS Access Key"
-}
-
-variable "aws_secret_key" {
-  default     = "xxx"
-  description = "Amazon AWS Secret Key"
+  description = "AWS local profile credentials"
 }
 
 variable "prefix" {
@@ -19,24 +14,24 @@ variable "prefix" {
   description = "Cluster Prefix - All resources created by Terraform have this prefix prepended to them"
 }
 
-variable "count_ec2_instances)" {
+variable "count_ec2_instance_nodes" {
   default     = "0"
   description = "Number of ec2 nodes"
 }
 
 variable "region" {
-  default     = "${var.default_region}"
-  description = "Amazon AWS Region for deployment"
+  default     = "us-east-1"
+  description = "AWS Region for deployment"
 }
 
-variable "ec2_node_type" {
+variable "ec2_instance_node_type" {
   default     = "t2.large"
-  description = "Amazon AWS instance type for the ec2 nodes"
+  description = "AWS instance type for the ec2 nodes"
 }
 
 variable "ssh_key_name" {
   default     = ""
-  description = "Amazon AWS Key Pair Name"
+  description = "AWS Key Pair Name"
 }
 
 data "aws_ami" "ubuntu" {
@@ -67,7 +62,7 @@ resource "aws_instance" "ec2_instance" {
   #private_ip      = "x.x.x.x${count.index}"
   source_dest_check = true # enable for NAT interfaces
 
-  # Compute nodes may have a xGiB root block device
+  # Node may have a xGiB root block device
   # root_block_device {
   #   volume_size = "x"
   #   volume_type = "gp2"
@@ -81,10 +76,10 @@ resource "aws_instance" "ec2_instance" {
 data "template_cloudinit_config" "ec2_cloudinit" {
   part {
     content_type = "text/x-shellscript"
-    content      = "${data.template_file.provision_ec2_ubuntu.rendered}"
+    content      = "${data.template_file.provision_ec2_node.rendered}"
   }
 }
 
-data "template_file" "provision_ec2_ubuntu" {
-  template = "${file("files/provision_ec2_ubuntu.sh")}"
+data "template_file" "provision_ec2_node" {
+  template = "${file("files/provision_ec2_node.sh")}"
 }
