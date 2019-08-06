@@ -11,7 +11,7 @@ resource "aws_vpc" "default_vpc" {
   enable_dns_support = true
 
   tags = {
-    Name = "default_test"
+    Name = "${var.prefix}_default_vpc"
   }
 }
 
@@ -24,7 +24,7 @@ resource "aws_subnet" "subnets" {
   availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
 
   tags = {
-    Name = "subnet_${count.index}"
+    Name = "${var.prefix}_subnet_${count.index}"
   }
 }
 
@@ -33,7 +33,7 @@ resource "aws_internet_gateway" "default_internet_gw" {
   vpc_id = "${aws_vpc.default_vpc.id}"
 
   tags = {
-      Name = "default_test"
+      Name = "${var.prefix}_default_internet_gw"
   }
 }
 
@@ -46,7 +46,7 @@ resource "aws_route_table" "default_routing_table" {
   }
 
   tags = {
-      Name = "default"
+      Name = "${var.prefix}_default_routing_table"
   }
 }
 
@@ -55,4 +55,41 @@ resource "aws_route_table_association" "subnet_association" {
   count = "${var.availability_zones}"
   subnet_id      = "${element(aws_subnet.subnets.*.id, count.index)}"
   route_table_id = "${aws_route_table.default_routing_table.id}"
+}
+
+
+
+# Network Load Balancer
+resource "aws_lb" "load_balancer" {
+  name               = "${var.prefix}-network-lb"
+  internal           = false
+  load_balancer_type = "network"
+  subnets            = "${aws_subnet.subnets.*.id}"
+
+  # enable_deletion_protection = true
+}
+
+# IP target group
+resource "aws_lb_target_group" "ip_target_group" {
+  port        = 80
+  protocol    = "TCP"
+  target_type = "ip"
+  vpc_id      = "${aws_vpc.default_vpc.id}"
+}
+
+resource "aws_lb_target_group_attachment" "target_group_attachement" {
+  count = "${var.count_ec2_instance_nodes}"
+  target_group_arn = "${aws_lb_target_group.ip_target_group.arn}"
+  target_id        = "${element(aws_instance.ec2_instance.*.private_ip, count.index)}"
+}
+
+resource "aws_lb_listener" "lb_listener" {
+  load_balancer_arn = "${aws_lb.load_balancer.arn}"
+  port              = 80
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.ip_target_group.arn}"
+  }
 }
