@@ -13,11 +13,33 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+resource "tls_private_key" "tls_key" {
+  algorithm = "RSA"
+  rsa_bits  = "2048"
+}
+
+resource "aws_key_pair" "ec2_key" {
+  key_name   = "${var.prefix}_ec2_instance_key"
+  public_key = "${tls_private_key.tls_key.public_key_openssh}"
+}
+
+resource "local_file" "public_key_openssh" {
+  content  = "${tls_private_key.tls_key.public_key_openssh}"
+  filename = "keys/id_rsa.pub"
+}
+resource "local_file" "private_key_pem" {
+  content  = "${tls_private_key.tls_key.private_key_pem}"
+  filename = "keys/id_rsa"
+  provisioner "local-exec" {
+    command = "chmod 400 keys/id_rsa"
+  }
+}
+
 resource "aws_instance" "ec2_instance" {
   count           = "${var.count_ec2_instance_nodes}"
   ami             = "${data.aws_ami.ubuntu.id}"
   instance_type   = "${var.ec2_instance_node_type}"
-  key_name        = "${var.ssh_key_name}"
+  key_name        = "${aws_key_pair.ec2_key.key_name}"
   security_groups = ["${aws_security_group.allow_all.id}"]
   user_data       = "${data.template_cloudinit_config.ec2_cloudinit.rendered}"
 
@@ -33,7 +55,7 @@ resource "aws_instance" "ec2_instance" {
   # }
 
   tags = {
-    Name = "${var.prefix}-ec2_instance-${count.index}"
+    Name = "${var.prefix}_ec2_instance_${count.index}"
   }
 }
 

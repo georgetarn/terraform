@@ -8,5 +8,3 @@ prefix = "hmrc"
 count_ec2_instance_nodes = "1"
 # EC2 instance types
 ec2_instance_node_type = "t2.large"
-# SSH keypair for connecting to the EC2 instances
-ssh_key_name = "georget"

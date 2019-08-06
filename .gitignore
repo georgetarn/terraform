@@ -27,4 +27,5 @@ override.tf.json
 # Vim swap files
 .*.sw?
 
-
+# Generated AWS key pair
+keys/*

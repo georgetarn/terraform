@@ -22,8 +22,3 @@ variable "ec2_instance_node_type" {
   default     = "t2.large"
   description = "AWS instance type for the ec2 nodes"
 }
-
-variable "ssh_key_name" {
-  default     = ""
-  description = "AWS Key Pair Name"
-}
