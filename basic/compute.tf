@@ -59,10 +59,6 @@ resource "aws_instance" "ec2_instance" {
   }
 }
 
-output "ec2_global_ips" {
-  value = ["${aws_instance.ec2_instance.*.public_ip}"]
-}
-
 data "template_cloudinit_config" "ec2_cloudinit" {
   part {
     content_type = "text/x-shellscript"
