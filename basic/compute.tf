@@ -44,7 +44,7 @@ resource "aws_instance" "ec2_instance" {
   user_data       = "${data.template_cloudinit_config.ec2_cloudinit.rendered}"
 
   # Networking
-  subnet_id       = "${aws_subnet.default_subnet.id}"
+  subnet_id       = "${aws_subnet.subnets.*.id[count.index % var.availability_zones]}"
   #private_ip      = "x.x.x.x${count.index}"
   source_dest_check = true # enable for NAT interfaces
 

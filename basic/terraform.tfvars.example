@@ -8,3 +8,5 @@ prefix = "hmrc"
 count_ec2_instance_nodes = "1"
 # EC2 instance types
 ec2_instance_node_type = "t2.large"
+# Number of availability zones
+availability_zones = "2"

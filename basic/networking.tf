@@ -1,3 +1,9 @@
+# Declare the data source to list all the availability zones
+# for the region configured in the provider
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 # Create a default VPC
 resource "aws_vpc" "default_vpc" {
   cidr_block = "192.168.0.0/16"
@@ -9,15 +15,16 @@ resource "aws_vpc" "default_vpc" {
   }
 }
 
-# Create a x.x.x.x/24 subnet in this VPC
-resource "aws_subnet" "default_subnet" {
-  cidr_block = "${cidrsubnet(aws_vpc.default_vpc.cidr_block, 0, 0)}"
+# Create a x.x.x.x/24 subnet in this VPC in the first availability zone
+resource "aws_subnet" "subnets" {
+  count = "${var.availability_zones}"
+  cidr_block = "${cidrsubnet(aws_vpc.default_vpc.cidr_block, 8, count.index )}"
   vpc_id = "${aws_vpc.default_vpc.id}"
   map_public_ip_on_launch = true
-  # availability_zone = "us-east-1a"
+  availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
 
   tags = {
-    Name = "default_test"
+    Name = "subnet_${count.index}"
   }
 }
 
@@ -43,8 +50,9 @@ resource "aws_route_table" "default_routing_table" {
   }
 }
 
-# Associate the route table to our subnet
-resource "aws_route_table_association" "default_subnet_association" {
-  subnet_id      = "${aws_subnet.default_subnet.id}"
+# Associate the route table to our subnets
+resource "aws_route_table_association" "subnet_association" {
+  count = "${var.availability_zones}"
+  subnet_id      = "${element(aws_subnet.subnets.*.id, count.index)}"
   route_table_id = "${aws_route_table.default_routing_table.id}"
 }
