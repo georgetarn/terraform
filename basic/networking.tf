@@ -61,6 +61,7 @@ resource "aws_route_table_association" "subnet_association" {
 
 # Network Load Balancer
 resource "aws_lb" "load_balancer" {
+  count              = "${var.include_lb ? 1 : 0}"
   name               = "${var.prefix}-network-lb"
   internal           = false
   load_balancer_type = "network"
@@ -71,6 +72,7 @@ resource "aws_lb" "load_balancer" {
 
 # IP target group
 resource "aws_lb_target_group" "ip_target_group" {
+  count       = "${var.include_lb ? 1 : 0}"
   port        = 80
   protocol    = "TCP"
   target_type = "ip"
@@ -78,18 +80,19 @@ resource "aws_lb_target_group" "ip_target_group" {
 }
 
 resource "aws_lb_target_group_attachment" "target_group_attachement" {
-  count = "${var.count_ec2_instance_nodes}"
-  target_group_arn = "${aws_lb_target_group.ip_target_group.arn}"
+  count = "${var.include_lb ? var.count_ec2_instance_nodes : 0}"
+  target_group_arn = "${aws_lb_target_group.ip_target_group[0].arn}"
   target_id        = "${element(aws_instance.ec2_instance.*.private_ip, count.index)}"
 }
 
 resource "aws_lb_listener" "lb_listener" {
-  load_balancer_arn = "${aws_lb.load_balancer.arn}"
+  count       = "${var.include_lb ? 1 : 0}"
+  load_balancer_arn = "${aws_lb.load_balancer[0].arn}"
   port              = 80
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.ip_target_group.arn}"
+    target_group_arn = "${aws_lb_target_group.ip_target_group[0].arn}"
   }
 }

@@ -27,3 +27,9 @@ variable "availability_zones" {
   default     = "1"
   description = "Number of availability zones to use"
 }
+
+variable "include_lb" {
+  type        = bool
+  default     = true
+  description = "Whether to include a load balancer or not"
+}

@@ -10,3 +10,5 @@ count_ec2_instance_nodes = "1"
 ec2_instance_node_type = "t2.large"
 # Number of availability zones
 availability_zones = "2"
+# Whether to include a load balancer or not
+include_lb = false

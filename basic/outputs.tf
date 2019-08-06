@@ -3,5 +3,5 @@ output "ec2_global_ips" {
 }
 
 output "load_balancer" {
-  value = "${aws_lb.load_balancer.dns_name}"
+  value = "${aws_lb.load_balancer[0].dns_name}"
 }
