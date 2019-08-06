@@ -1,0 +1,12 @@
+# Amazon AWS profile name as set in the shared credentials file
+profile = "productdev"
+# Region in which resources should be created
+region = "us-east-1"
+# Resources will be prefixed with this prefix to avoid name clashes
+prefix = "hmrc"
+# Count of EC2 instances
+count_ec2_instance_nodes = "1"
+# EC2 instance types
+ec2_instance_node_type = "t2.large"
+# SSH keypair for connecting to the EC2 instances
+ssh_key_name = "georget"
