@@ -57,8 +57,6 @@ resource "aws_route_table_association" "subnet_association" {
   route_table_id = "${aws_route_table.default_routing_table.id}"
 }
 
-
-
 # Network Load Balancer
 resource "aws_lb" "load_balancer" {
   count              = "${var.include_lb ? 1 : 0}"
@@ -68,31 +66,61 @@ resource "aws_lb" "load_balancer" {
   subnets            = "${aws_subnet.subnets.*.id}"
 
   # enable_deletion_protection = true
+
+  tags = {
+    Environment = "production"
+  }
 }
 
 # IP target group
-resource "aws_lb_target_group" "ip_target_group" {
+resource "aws_lb_target_group" "sensu_agent_port" {
   count       = "${var.include_lb ? 1 : 0}"
-  port        = 80
+  port        = 8081
   protocol    = "TCP"
   target_type = "ip"
   vpc_id      = "${aws_vpc.default_vpc.id}"
 }
 
-resource "aws_lb_target_group_attachment" "target_group_attachement" {
+resource "aws_lb_target_group" "sensu_front_port" {
+  count       = "${var.include_lb ? 1 : 0}"
+  port        = 3000
+  protocol    = "TCP"
+  target_type = "ip"
+  vpc_id      = "${aws_vpc.default_vpc.id}"
+}
+
+resource "aws_lb_target_group_attachment" "target_group_attachement_agent" {
   count = "${var.include_lb ? var.count_ec2_instance_nodes : 0}"
-  target_group_arn = "${aws_lb_target_group.ip_target_group[0].arn}"
+  target_group_arn = "${aws_lb_target_group.sensu_agent_port[0].arn}"
   target_id        = "${element(aws_instance.ec2_instance.*.private_ip, count.index)}"
 }
 
-resource "aws_lb_listener" "lb_listener" {
+resource "aws_lb_target_group_attachment" "target_group_attachement_front" {
+  count = "${var.include_lb ? var.count_ec2_instance_nodes : 0}"
+  target_group_arn = "${aws_lb_target_group.sensu_front_port[0].arn}"
+  target_id        = "${element(aws_instance.ec2_instance.*.private_ip, count.index)}"
+}
+
+resource "aws_lb_listener" "lb_listener_sensuagent" {
   count       = "${var.include_lb ? 1 : 0}"
   load_balancer_arn = "${aws_lb.load_balancer[0].arn}"
-  port              = 80
+  port              = 8081
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.ip_target_group[0].arn}"
+    target_group_arn = "${aws_lb_target_group.sensu_agent_port[0].arn}"
+  }
+}
+
+resource "aws_lb_listener" "lb_listener_sensufront" {
+  count       = "${var.include_lb ? 1 : 0}"
+  load_balancer_arn = "${aws_lb.load_balancer[0].arn}"
+  port              = 3000
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.sensu_front_port[0].arn}"
   }
 }
