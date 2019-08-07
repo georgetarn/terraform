@@ -1,5 +1,5 @@
-# Terraform
-Terraform templates for simple jobs
+# SensuGo Cluster provisioning with Ansible
+Terraform templates for provisioning a sensu-go cluster with terraform and ansible
 
 ## Getting started
 
