@@ -55,5 +55,6 @@ resource "aws_instance" "ec2_instance" {
 
   tags = {
     Name = "${var.prefix}_ec2_instance_${count.index}"
+    Backend = "backend-${count.index}"
   }
 }
