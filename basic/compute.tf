@@ -64,8 +64,24 @@ data "template_cloudinit_config" "ec2_cloudinit" {
     content_type = "text/x-shellscript"
     content      = "${data.template_file.provision_ec2_node.rendered}"
   }
+
+  part {
+    content_type = "text/x-shellscript"
+    content      = "${data.template_file.provision_sensu_backend.rendered}"
+  }
 }
 
 data "template_file" "provision_ec2_node" {
   template = "${file("files/provision_ec2_node.sh")}"
+}
+
+data "template_file" "provision_sensu_backend" {
+  template = "${file("files/provision_sensu_backend.sh")}"
+
+  vars = {
+    sensu_username      = "admin"
+    sensu_password      = "P@ssw0rd!"
+    sensu_namespace     = "default"
+    sensu_port          = "8080"
+  }
 }

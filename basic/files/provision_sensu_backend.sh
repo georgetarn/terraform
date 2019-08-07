@@ -8,7 +8,7 @@ apt-get install sensu-go-backend
 apt-get install sensu-go-cli
 
 sensuctl configure -n \
---username 'admin' \
---password 'P@ssw0rd!' \
---namespace default \
---url 'http://127.0.0.1:8080'
+--username '${sensu_username}' \
+--password '${sensu_password}' \
+--namespace '${sensu_namespace}' \
+--url 'http://127.0.0.1:${sensu_port}'
