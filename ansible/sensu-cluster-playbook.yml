@@ -1,0 +1,10 @@
+---
+- name: Provision Sensu backend instances
+  hosts: sensu-backend
+  remote_user: ubuntu
+  roles:
+    - common-config
+    - sensu-backend
+ # tasks:
+ #   - debug: var=ansible_facts
+    

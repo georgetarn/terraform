@@ -41,7 +41,6 @@ resource "aws_instance" "ec2_instance" {
   instance_type   = "${var.ec2_instance_node_type}"
   key_name        = "${aws_key_pair.ec2_key.key_name}"
   security_groups = ["${aws_security_group.allow_all.id}"]
-  user_data       = "${data.template_cloudinit_config.ec2_cloudinit.rendered}"
 
   # Networking
   subnet_id       = "${aws_subnet.subnets.*.id[count.index % var.availability_zones]}"
@@ -56,32 +55,5 @@ resource "aws_instance" "ec2_instance" {
 
   tags = {
     Name = "${var.prefix}_ec2_instance_${count.index}"
-  }
-}
-
-data "template_cloudinit_config" "ec2_cloudinit" {
-  part {
-    content_type = "text/x-shellscript"
-    content      = "${data.template_file.provision_ec2_node.rendered}"
-  }
-
-  part {
-    content_type = "text/x-shellscript"
-    content      = "${data.template_file.provision_sensu_backend.rendered}"
-  }
-}
-
-data "template_file" "provision_ec2_node" {
-  template = "${file("files/provision_ec2_node.sh")}"
-}
-
-data "template_file" "provision_sensu_backend" {
-  template = "${file("files/provision_sensu_backend.sh")}"
-
-  vars = {
-    sensu_username      = "admin"
-    sensu_password      = "P@ssw0rd!"
-    sensu_namespace     = "default"
-    sensu_port          = "8080"
   }
 }

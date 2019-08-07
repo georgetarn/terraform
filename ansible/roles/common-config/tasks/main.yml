@@ -1,0 +1,2 @@
+# Install tasks for all nodes in the cluster
+- import_tasks: docker.yml

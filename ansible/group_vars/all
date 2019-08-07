@@ -1,0 +1,3 @@
+
+etcd_initial_cluster:
+  "{% for host in groups['sensu-backend'] %}{{ host }}=http://{{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:2380,{% endfor %}"

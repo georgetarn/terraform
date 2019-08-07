@@ -1,0 +1,54 @@
+# depending on this check, the following steps are skipped for omnipotence
+- name: check if sensu is already initialized
+  stat: 
+    path: /etc/sensu/backend.yml
+  register: sensu_is_installed
+  become: yes
+
+- name: Install sensu dependencies
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+    state: present
+  become: yes
+
+- name: add the Sensu repository
+  shell: curl -s https://packagecloud.io/install/repositories/sensu/stable/script.deb.sh | bash
+  become: yes
+
+- name: Install Sensu-Go backend and cli
+  apt:
+    pkg: 
+      - sensu-go-backend
+      - sensu-go-cli
+    state: present
+    update_cache: true
+  become: yes
+
+# Copy the template file to /etc/sensu/backend.yml
+- name: copy backend.yml to /etc/sensu/backend.yml
+  template:
+    src: sensu-backend/backend.yml.j2
+    dest: /etc/sensu/backend.yml
+    owner: sensu
+    group: sensu
+    mode: '0750'
+  become: yes
+
+- name: Restart sensu-backend service
+  service:
+    name: sensu-backend
+    state: restarted
+    enabled: yes
+  become: yes
+
+- name: configure the backend
+  shell: sleep 3 && sensuctl configure -n \
+          --username 'admin' \
+          --password 'P@ssw0rd!' \
+          --namespace default \
+          --url 'http://127.0.0.1:8080'
