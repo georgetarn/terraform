@@ -3,6 +3,7 @@ Terraform templates for provisioning a sensu-go cluster with terraform and ansib
 
 ## Architecture
 
+![ARCHITECTURE](docs/clustered_architecture.svg)
 
 ## Getting started
 
