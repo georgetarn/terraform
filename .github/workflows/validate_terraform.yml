@@ -1,10 +1,10 @@
-name: Greet Everyone
-# This workflow is triggered on pushes to the repository.
+name: Start template validation
+
 on: [push]
 
 jobs:
   build:
-    name: terraform-fmt
+    name: Validate templates
     runs-on: ubuntu-latest
     steps:
       - uses: hashicorp/terraform-github-actions/fmt@v0.4.0
@@ -12,4 +12,18 @@ jobs:
           TF_ACTION_WORKING_DIR: .
           TF_ACTION_WORKSPACE: default
           TF_ACTION_COMMENT: "false"
-
+      - uses: hashicorp/terraform-github-actions/init@v0.4.0
+        env:
+          TF_ACTION_WORKING_DIR: .
+          TF_ACTION_WORKSPACE: default
+          TF_ACTION_COMMENT: "false"
+      - uses: hashicorp/terraform-github-actions/validate@v0.4.0
+        env:
+          TF_ACTION_WORKING_DIR: .
+          TF_ACTION_WORKSPACE: default
+          TF_ACTION_COMMENT: "false"        
+      - uses: hashicorp/terraform-github-actions/plan@v0.4.0
+        env:
+          TF_ACTION_WORKING_DIR: .
+          TF_ACTION_WORKSPACE: default
+          TF_ACTION_COMMENT: "false"               
