@@ -1,14 +1,20 @@
-action "terraform fmt" {
-  # Replace <latest tag> with the latest tag from
-  # https://github.com/hashicorp/terraform-github-actions/releases.
-  uses = "hashicorp/terraform-github-actions/fmt@v0.4.0"
+name: Greet Everyone
+# This workflow is triggered on pushes to the repository.
+on: [push]
 
-  # See Environment Variables below for details.
-  env = {
-    TF_ACTION_WORKING_DIR = "."
-  }
-
-  # We need the GitHub token to be able to comment back on the pull request.
-  TF_ACTION_COMMENT = "false"
-  secrets = ["GITHUB_TOKEN"]
-}
+jobs:
+  build:
+    # Job name is Greeting
+    name: Greeting
+    # This job runs on Linux
+    runs-on: ubuntu-latest
+    steps:
+      # This step uses GitHub's hello-world-javascript-action: https://github.com/actions/hello-world-javascript-action
+      - name: Hello world
+        uses: actions/hello-world-javascript-action@v1
+        with:
+          who-to-greet: 'Mona the Octocat'
+        id: hello
+      # This step prints an output (time) from the previous step's action.
+      - name: Echo the greeting's time
+        run: echo 'The time was ${{ steps.hello.outputs.time }}.'
