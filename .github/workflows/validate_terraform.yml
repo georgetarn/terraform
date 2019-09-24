@@ -1,6 +1,10 @@
 name: Start template validation
 
-on: [push]
+on: 
+  push:
+    branches:
+    - master
+    - f/*
 
 jobs:
   build:
@@ -21,9 +25,4 @@ jobs:
         env:
           TF_ACTION_WORKING_DIR: .
           TF_ACTION_WORKSPACE: default
-          TF_ACTION_COMMENT: "false"        
-      - uses: hashicorp/terraform-github-actions/plan@v0.4.0
-        env:
-          TF_ACTION_WORKING_DIR: .
-          TF_ACTION_WORKSPACE: default
-          TF_ACTION_COMMENT: "false"               
+          TF_ACTION_COMMENT: "false"                 
