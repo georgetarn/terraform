@@ -9,14 +9,16 @@ Terraform templates for provisioning a sensu-go cluster with terraform and ansib
 ## Getting started
 
 ```
-cd basic
-cp terraform.tfvars.example terraform.tfvars
+1. Clone the repo
+2. cd into the repo
+3. cp terraform.tfvars.example terraform.tfvars
 ```
 
-After doing the template copy above, you can now populate the variables as you wish.
+After doing the template copy above, you can now populate the variables as you wish. Once done run:
 
 ```
 terraform init
+terraform plan
 terraform apply
 ```
 
@@ -26,7 +28,7 @@ terraform apply
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+TODO: Add additional notes about how to deploy this on a live system
 
 ## Built With
 
@@ -35,11 +37,11 @@ Add additional notes about how to deploy this on a live system
 
 ## Contributing
 
-
+TODO: Add some contribution guidelines
 
 ## Versioning
 
-
+TODO: Add release strategy
 
 ## Authors
 
