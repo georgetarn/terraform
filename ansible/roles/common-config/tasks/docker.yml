@@ -1,0 +1,66 @@
+- name: Install docker dependencies
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+    state: present
+  become: yes
+
+- name: Add Docker' apt repository gpg key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  become: yes
+
+- name: Add Docker's APT repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+    filename: 'docker'
+  become: yes
+
+- name: Install Docker CE and containerd
+  apt:
+    pkg: 
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+    update_cache: true
+  become: yes
+
+- name: Adding existing user "{{ ansible_user }}" to group docker
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+  become: yes
+
+- name: Copy docker daemon json file to a temporary dest
+  copy:
+    src: docker/
+    dest: /tmp/cluster-install/docker/
+
+- name: Install daemon.json
+  copy:
+    src: /tmp/cluster-install/docker/
+    dest: /etc/docker/
+    remote_src: yes
+  become: yes
+
+- name: Create systemd directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+  become: yes
+
+- name: Restart docker service
+  systemd:
+    name: docker
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+  become: yes

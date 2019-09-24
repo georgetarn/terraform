@@ -1,0 +1,14 @@
+# Amazon AWS profile name as set in the shared credentials file
+profile = "productdev"
+# Region in which resources should be created
+region = "us-east-1"
+# Resources will be prefixed with this prefix to avoid name clashes
+prefix = "test"
+# Count of EC2 instances
+count_ec2_instance_nodes = "1"
+# EC2 instance types
+ec2_instance_node_type = "t2.large"
+# Number of availability zones
+availability_zones = "2"
+# Whether to include a load balancer or not
+include_lb = false
