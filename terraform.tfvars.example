@@ -1,7 +1,7 @@
 # Amazon AWS profile name as set in the shared credentials file
 profile = "productdev"
 # Region in which resources should be created
-region = "us-east-1"
+region = "us-east-2"
 # Resources will be prefixed with this prefix to avoid name clashes
 prefix = "hmrc"
 # Count of EC2 instances

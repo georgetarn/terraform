@@ -20,15 +20,9 @@ resource "null_resource" "ensure_connectivity" {
 
   connection {
     type        = "ssh"
-    user        = "ubuntu"
+    user        = "ec2-user"
     host = "${aws_instance.ec2_instance.*.public_ip[count.index]}"
     private_key = "${tls_private_key.tls_key.private_key_pem}"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update -y"
-    ]
   }
 }
 

@@ -1,10 +1,10 @@
-data "aws_ami" "ubuntu" {
+data "aws_ami" "redhat" {
   most_recent = true
-  owners      = ["099720109477"] # Canonical
+  owners      = ["309956199498"] # redhat
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"]
+    values = ["RHEL-7.7_HVM_GA-20190723-x86_64-1-Hourly2-GP2"]
   }
 
   filter {
@@ -37,7 +37,7 @@ resource "local_file" "private_key_pem" {
 
 resource "aws_instance" "ec2_instance" {
   count           = "${var.count_ec2_instance_nodes}"
-  ami             = "${data.aws_ami.ubuntu.id}"
+  ami             = "${data.aws_ami.redhat.id}"
   instance_type   = "${var.ec2_instance_node_type}"
   key_name        = "${aws_key_pair.ec2_key.key_name}"
   security_groups = ["${aws_security_group.allow_all.id}"]

@@ -6,22 +6,20 @@
   become: yes
 
 - name: Install sensu dependencies
-  apt:
+  yum:
     pkg:
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gnupg-agent
-      - software-properties-common
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
     state: present
   become: yes
 
 - name: add the Sensu repository
-  shell: curl -s https://packagecloud.io/install/repositories/sensu/stable/script.deb.sh | bash
+  shell: curl -s https://packagecloud.io/install/repositories/sensu/stable/script.rpm.sh | sudo bash
   become: yes
 
 - name: Install Sensu-Go backend and cli
-  apt:
+  yum:
     pkg: 
       - sensu-go-backend
       - sensu-go-cli
