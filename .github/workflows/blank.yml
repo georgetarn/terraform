@@ -3,7 +3,8 @@ name: CI
 on: [pull]
 
 jobs:
-  validate:
+  linters_validate:
+    runs-on: ubuntu-latest
     steps:
       - name: Validate template
         uses: docker://hashicorp/terraform:latest
